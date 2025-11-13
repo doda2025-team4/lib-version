@@ -1,0 +1,7 @@
+This repository will contain the solutions to the following functionalities:
+
+- *F1: Create a Version-aware Library*: Add a version-aware Maven library `lib-version` to your organization. The library should contain a class `VersionUtil` that can be asked for its version. The implementation should parse meta-data that is included in the package or explicitly store the version in a separate resource ﬁle. The `app` should depend on the library and use the `VersionUtil` somewhere. This feature request has two purposes: a) it allows you to illustrate that you understand how to release and reuse a library and b) the awareness about the version can prove useful later, for example, to add meaningful system information during the monitoring.
+	- **Info:** Do not rely on parsing data from the version-control system, like tags, when determining the version during runtime, as it might not always be available when the library is reused.
+- *F2: Library Release:* A workﬂow is used to automatically package and version `lib-version` and to release it in the GitHub package registry for Maven.
+	- **Caution:** Do *NOT* release your projects to *Maven Central*! Do not pollute release repositories with test releases!
+- *F11: `lib-version` pre-releases:* All stable releases of all your artifacts must be properly and automatically versioned. However, we want to further advance the versioning concept for the `lib-version` repository. The goal is to automate both the creation of stable releases, while also automating the release of pre-release versions from branches.
