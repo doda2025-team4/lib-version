@@ -8,13 +8,13 @@ import java.util.Properties;
  * Hello world!
  *
  */
-public class App 
+public class VersionUtil
 {
     public static void main( String[] args )
     {
-        App app = new App();
+        VersionUtil versionUtil = new VersionUtil();
         try {
-            String libVersion = app.getVersion();
+            String libVersion = versionUtil.getVersion();
             System.out.println("I am version: %s".formatted(libVersion));
         } catch (IOException e) {
             e.printStackTrace();
