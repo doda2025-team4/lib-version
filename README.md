@@ -24,4 +24,26 @@ I used the following docker command to enter a container where everything requir
 docker run --rm -it -v /path/to/lib-version/:/usr/src/lib-version:Z -w /usr/src/lib-version maven:3.9.11-eclipse-temurin-25-noble /bin/bash
 ```
 
+To compile the project, run the following inside the interactively run container:
+
+```bash
+mvn package
+```
+
+To run the executable generated, run the following inside the interactively run container:
+
+```bash
+java -cp target/lib-version-1.0-SNAPSHOT.jar com.github.doda2025_team4.lib.App
+```
+
 I learned how to do this from: https://hub.docker.com/_/maven.
+
+Built upon this project, I implemented what was discussed [here](https://stackoverflow.com/questions/3697449/retrieve-version-from-maven-pom-xml-in-code) to statically place the version specified in the pom.xml in a property.
+
+To access the properties, I followed the instructions found [here](https://mkyong.com/java/java-read-a-file-from-resources-folder/).
+
+Now, when compiling and running the project, the following should be printed:
+
+```
+I am version: 1.0-SNAPSHOT
+```
