@@ -27,7 +27,7 @@ docker run --rm -it -v /path/to/lib-version/:/usr/src/lib-version:Z -w /usr/src/
 To compile the project and run the tests, run the following inside the interactively run container:
 
 ```bash
-mvn package
+mvn clean package
 ```
 
 I learned how to do this from: https://hub.docker.com/_/maven.
@@ -45,3 +45,13 @@ To create the GitHub action that releases the package to the repo, I used the te
 I changed it so it also runs on push to branch f2 for testing.
 
 I updated `pom.xml` to include a `distributionManagement` section as specified in https://docs.github.com/en/actions/tutorials/publish-packages/publish-java-packages-with-maven.
+
+## F11
+
+I replaced the hardcoded version in `pom.xml` by the CI-friendly `${revision}`, as specified in: https://maven.apache.org/guides/mini/guide-maven-ci-friendly.html.
+
+However, this means the unit test no longer works. So, I removed it. This also means, you need to provide a version in the packaging command:
+
+```bash
+mvn -Drevision=1.0.0-SNAPSHOT clean package
+```
