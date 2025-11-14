@@ -10,17 +10,6 @@ import java.util.Properties;
  */
 public class VersionUtil
 {
-    public static void main( String[] args )
-    {
-        VersionUtil versionUtil = new VersionUtil();
-        try {
-            String libVersion = versionUtil.getVersion();
-            System.out.println("I am version: %s".formatted(libVersion));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public String getVersion() throws IOException {
         InputStream in = getClass().getClassLoader().getResourceAsStream("lib.properties");
         if (in == null) {
