@@ -37,3 +37,11 @@ Built upon this project, I implemented what was discussed [here](https://stackov
 To access the properties, I followed the instructions found [here](https://mkyong.com/java/java-read-a-file-from-resources-folder/).
 
 Now, when running the tests, you should see the tests passing. The test verifies the string returned by getVersion() is equal to the version specified in `pom.xml`.
+
+## F2
+
+To create the GitHub action that releases the package to the repo, I used the template provided at: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path.
+
+I changed it so it also runs on push to branch f2 for testing.
+
+I updated `pom.xml` to include a `distributionManagement` section as specified in https://docs.github.com/en/actions/tutorials/publish-packages/publish-java-packages-with-maven.
