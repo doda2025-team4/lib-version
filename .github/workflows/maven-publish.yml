@@ -4,9 +4,6 @@
 name: Maven Package
 
 on:
-  push:
-    branches:
-      - f2
   release:
     types: [created]
 
