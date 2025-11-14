@@ -23,11 +23,18 @@
     </dependency>
   </dependencies>
   <build>
-  <resources>
-    <resource>
-      <directory>src/main/resources-filtered</directory>
-      <filtering>true</filtering>
-    </resource>
-  </resources>   
-</build>
+    <resources>
+      <resource>
+        <directory>src/main/resources-filtered</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>   
+  </build>
+  <distributionManagement>
+    <repository>
+      <id>github</id>
+      <name>GitHub doda2025-team4 Apache Maven Packages</name>
+      <url>https://maven.pkg.github.com/doda2025-team4/lib-version</url>
+    </repository>
+  </distributionManagement>
 </project>
