@@ -66,10 +66,10 @@ This also required, the use of a release configuration. I followed the guideline
 
 ## F11
 
-I added the develop branch as another branch where releases will be generated. For this one, I set the pre-release flag to be true.
+I added the develop branch as another branch where releases will be generated. For this one, I set the pre-release flag to be true. This was done both in the `.releaserc.json` and in the `semantic-versioning.yml`. In the future, more branches could be added like this, for example: rc, alpha, beta, etc.
 
 Additionally, I added a feature to the library. It now generates some sentences. This is used to test to see if the minor version increases as expected.
 
 Furthermore, the version of the Maven package has been cleaned. It no longer has a prefix.
 
-To test a major version change, I implemented some breaking changes. Renaming a class. Also added features to test minor verion changes and a fix to test patches.
+To test a major version change, I implemented some breaking changes. Renaming a class. I also added features to test minor verion changes and a fix to test patches. Finally, I did some work on this documentation to see if indeed no new release would be made.
