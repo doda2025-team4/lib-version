@@ -60,4 +60,12 @@ The `-Drevision` flag also needs to be used in the CI packaging workflow. Its va
 
 To automatically have a new releases be created with correct and automatically generated versions, I have used `cycjimmy/semantic-release-action@v5`. This is an GitHub Action from the GitHub Marketplace. For more information, visit: https://github.com/marketplace/actions/action-for-semantic-release#semantic_version.
 
-This ensures a new release is published with correct versions according to [Semantic Release](https://github.com/semantic-release/semantic-release) when a commit is pushed to the main branch.
+This ensures a new release is published with correct versions according to [Semantic Release](https://github.com/semantic-release/semantic-release) when a commit is pushed to the main branch. This relies on the use of [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/). It should work for merge request to main. However, fast forward merges will likely not work because it doesn't explicitly push to the branch.
+
+This also required, the use of a release configuration. I followed the guideline [here](https://github.com/semantic-release/semantic-release/blob/master/docs/usage/configuration.md#configuration) to create `.releaerc.json`. 
+
+## F11
+
+I added the develop branch as another branch where releases will be generated. For this one, I set the pre-release flag to be true.
+
+Additionally, I added a feature to the library. It now generates some sentences. This is used to test to see if the minor version increases as expected.
