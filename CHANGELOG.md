@@ -1,3 +1,17 @@
+# [2.0.0](https://github.com/doda2025-team4/lib-version/compare/v1.1.0...v2.0.0) (2025-11-15)
+
+
+### Code Refactoring
+
+* renamed the good sentence generator class ([d4943bd](https://github.com/doda2025-team4/lib-version/commit/d4943bdbbe413d58c28e85b1c003ebfc8e1931f6))
+* VersionUtil no longer throws IOException ([9958534](https://github.com/doda2025-team4/lib-version/commit/99585342e5584d8e3fbf3c145064a0a06177e3a9))
+
+
+### BREAKING CHANGES
+
+* method signature of VersionUtil constructor changed. IOException no longer thrown.
+* old names can no longer be used.
+
 # [1.1.0](https://github.com/doda2025-team4/lib-version/compare/v1.0.0...v1.1.0) (2025-11-15)
 
 
