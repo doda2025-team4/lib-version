@@ -27,4 +27,8 @@ public class VersionUtil
     public String getVersion() {
         return libProps.getProperty("version");
     }
+
+    public String getName() {
+        return libProps.getProperty("name");
+    }
 }
