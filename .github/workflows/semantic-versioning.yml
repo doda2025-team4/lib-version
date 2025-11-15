@@ -28,7 +28,11 @@ jobs:
         with:
           branches: |
             [
-              'main'
+              'main',
+              {
+                name: 'develop',
+                prerelease: true
+              }
             ]
           extra_plugins: |
             @semantic-release/git
