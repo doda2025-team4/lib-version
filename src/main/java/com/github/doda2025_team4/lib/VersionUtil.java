@@ -8,7 +8,7 @@ import java.util.Properties;
 
 public class VersionUtil
 {
-    private Properties libProps;
+    private final Properties libProps;
 
     public VersionUtil() {
         InputStream in = getClass().getClassLoader().getResourceAsStream("lib.properties");
