@@ -69,3 +69,7 @@ This also required, the use of a release configuration. I followed the guideline
 I added the develop branch as another branch where releases will be generated. For this one, I set the pre-release flag to be true.
 
 Additionally, I added a feature to the library. It now generates some sentences. This is used to test to see if the minor version increases as expected.
+
+Furthermore, the version of the Maven package has been cleaned. It no longer has a prefix.
+
+To test a major version change, I implemented some breaking changes. Renaming a class. Also added features to test minor verion changes and a fix to test patches.

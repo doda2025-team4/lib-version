@@ -2,23 +2,29 @@ package com.github.doda2025_team4.lib;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.lang.RuntimeException;
 import java.util.Properties;
 
-/**
- * Hello world!
- *
- */
+
 public class VersionUtil
 {
-    public String getVersion() throws IOException {
-        final InputStream in = getClass().getClassLoader().getResourceAsStream("lib.properties");
+    private Properties libProps;
+
+    public VersionUtil() {
+        InputStream in = getClass().getClassLoader().getResourceAsStream("lib.properties");
         if (in == null) {
-            throw new IOException("properties not found!");
+            throw new RuntimeException("Could not find library properties.");
         }
 
-        final Properties libProps = new Properties();
-        libProps.load(in);
+        libProps = new Properties();
+        try {
+            libProps.load(in);
+        } catch(IOException e) {
+            throw new RuntimeException("Could not find library properties.");
+        }
+    }
 
+    public String getVersion() {
         return libProps.getProperty("version");
     }
 }
