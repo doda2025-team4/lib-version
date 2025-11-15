@@ -1,3 +1,15 @@
+# [2.0.0-develop.2](https://github.com/doda2025-team4/lib-version/compare/v2.0.0-develop.1...v2.0.0-develop.2) (2025-11-15)
+
+
+### Code Refactoring
+
+* VersionUtil no longer throws IOException ([ed31507](https://github.com/doda2025-team4/lib-version/commit/ed315073d2f8408d01e5a822dfa85df4409940c5))
+
+
+### BREAKING CHANGES
+
+* method signature of VersionUtil constructor changed. IOException no longer thrown.
+
 # [2.0.0-develop.1](https://github.com/doda2025-team4/lib-version/compare/v1.1.0-develop.1...v2.0.0-develop.1) (2025-11-15)
 
 
