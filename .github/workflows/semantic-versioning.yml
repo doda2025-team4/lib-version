@@ -1,8 +1,12 @@
 name: Semantic Versioning
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
+      - 'main'
+      - 'develop'
+      - 'release/*'
       - 'f2'
 
 permissions:
@@ -14,6 +18,7 @@ jobs:
   release:
     name: Versioned Release
     runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
     outputs:
       version: ${{ steps.version.outputs.version }}
 
@@ -21,7 +26,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v5
         with:
-          ref: ${{ github.head_ref }}   # checkout the correct branch name
+          ref: ${{ github.event.pull_request.base.ref }}   # checkout the correct branch name
           fetch-depth: 0                # fetch the whole repo history
 
       - name: Git Version
