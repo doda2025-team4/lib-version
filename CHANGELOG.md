@@ -1,3 +1,10 @@
+# [1.1.0-develop.1](https://github.com/doda2025-team4/lib-version/compare/v1.0.0...v1.1.0-develop.1) (2025-11-15)
+
+
+### Features
+
+* sentence generator ([f69b69f](https://github.com/doda2025-team4/lib-version/commit/f69b69f3dd98208bba384b9679ed8a107c8b2b4c))
+
 # 1.0.0 (2025-11-15)
 
 
