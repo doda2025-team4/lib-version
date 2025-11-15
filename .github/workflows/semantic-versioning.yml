@@ -33,7 +33,7 @@ jobs:
         with:
           release-branch: main
           dev-branch: develop
-          minor-identifier: /^feat(ure)+:|^feat(ure)+\(.*\):/
+          minor-identifier: /^feat:|^feat\(.*\):/
           major-identifier: /BREAKING CHANGE|^[^:]*!:/
 
       - name: Release
@@ -43,3 +43,5 @@ jobs:
           name: ${{ steps.version.outputs.version }}
           tag_name: v${{ steps.version.outputs.version }}
           make_latest: false
+          target_commitish: ${{ github.event.pull_request.base.ref }}
+          generate_release_notes: true
