@@ -3,7 +3,7 @@ package com.github.doda2025_team4.lib;
 import java.util.Random;
 
 
-public class GoodSentence
+public class GoodSentenceGenerator
 {
     private final String[] sentences = {
         "Team 4 is the best!",
@@ -16,11 +16,11 @@ public class GoodSentence
 
     private final Random randomGenerator;
 
-    public GoodSentence() {
+    public GoodSentenceGenerator() {
         this(new Random());
     }
 
-    GoodSentence(Random randomGenerator) {
+    GoodSentenceGenerator(Random randomGenerator) {
         this.randomGenerator = randomGenerator;
     }
 

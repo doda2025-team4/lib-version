@@ -5,9 +5,9 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Unit test for simple GoodSentence.
+ * Unit test for simple GoodSentenceGenerator.
  */
-public class GoodSentenceTest
+public class GoodSentenceGeneratorTest
 {
     /**
      * Test getVersion does not throw and returns correct version.
@@ -25,8 +25,8 @@ public class GoodSentenceTest
             }
         };
         
-        GoodSentence goodSentence = new GoodSentence(mockRandom);
-        goodSentence.generateSentence();
+        GoodSentenceGenerator goodSentenceGenerator = new GoodSentenceGenerator(mockRandom);
+        goodSentenceGenerator.generateSentence();
         
         assertEquals(6, capturedBound[0]);
     }
@@ -39,8 +39,8 @@ public class GoodSentenceTest
                 return 3;
             }
         };
-        GoodSentence goodSentence = new GoodSentence(mockRandom);
+        GoodSentenceGenerator goodSentenceGenerator = new GoodSentenceGenerator(mockRandom);
         
-        assertEquals("Programming is easy for team 4.", goodSentence.generateSentence());
+        assertEquals("Programming is easy for team 4.", goodSentenceGenerator.generateSentence());
     }
 }
