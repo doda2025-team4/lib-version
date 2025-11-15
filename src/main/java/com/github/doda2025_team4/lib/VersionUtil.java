@@ -11,12 +11,12 @@ import java.util.Properties;
 public class VersionUtil
 {
     public String getVersion() throws IOException {
-        InputStream in = getClass().getClassLoader().getResourceAsStream("lib.properties");
+        final InputStream in = getClass().getClassLoader().getResourceAsStream("lib.properties");
         if (in == null) {
             throw new IOException("properties not found!");
         }
 
-        Properties libProps = new Properties();
+        final Properties libProps = new Properties();
         libProps.load(in);
 
         return libProps.getProperty("version");
