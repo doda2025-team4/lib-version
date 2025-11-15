@@ -1,3 +1,10 @@
+# [2.1.0](https://github.com/doda2025-team4/lib-version/compare/v2.0.0...v2.1.0) (2025-11-15)
+
+
+### Features
+
+* library name is now also available ([5867f94](https://github.com/doda2025-team4/lib-version/commit/5867f94b0880f4cf2d242465e29a6ec542dc63b2))
+
 # [2.1.0-develop.1](https://github.com/doda2025-team4/lib-version/compare/v2.0.0...v2.1.0-develop.1) (2025-11-15)
 
 
