@@ -40,13 +40,11 @@ Now, when running the tests, you should see the tests passing. The test verifies
 
 ## F2
 
-### Packaging Part
+### Packaging
 
-To create the GitHub action that creates a package in the repo, I used the template provided at: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path.
+To create the GitHub action that creates a package in the repo, I used the template provided at: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path. The only thing I changed is to have it trigger when a version is released.
 
 I updated `pom.xml` to include a `distributionManagement` section as specified in https://docs.github.com/en/actions/tutorials/publish-packages/publish-java-packages-with-maven.
-
-### Versioning Part
 
 I replaced the hardcoded version in `pom.xml` by the CI-friendly `${revision}`, as specified in: https://maven.apache.org/guides/mini/guide-maven-ci-friendly.html.
 
@@ -56,4 +54,10 @@ However, this means the unit test no longer works. So, I removed it. This also m
 mvn -Drevision=1.0.0-SNAPSHOT clean package
 ```
 
-The `-Drevision` flag also needs to be used in the CI packaging workflow. Its value is `${{ github.event.release.name }}`, because the packaging workflow is run every creation of a release.
+The `-Drevision` flag also needs to be used in the CI packaging workflow. Its value is `${{ github.event.release.name }}`, because the packaging workflow is run every time a release is published.
+
+### Releasing and Versioning
+
+To automatically have a new releases be created with correct and automatically generated versions, I have used `cycjimmy/semantic-release-action@v5`. This is an GitHub Action from the GitHub Marketplace. For more information, visit: https://github.com/marketplace/actions/action-for-semantic-release#semantic_version.
+
+This ensures a new release is published with correct versions according to [Semantic Release](https://github.com/semantic-release/semantic-release) when a commit is pushed to the main branch.
