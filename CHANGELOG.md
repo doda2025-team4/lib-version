@@ -1,3 +1,15 @@
+# [2.0.0-develop.1](https://github.com/doda2025-team4/lib-version/compare/v1.1.0-develop.1...v2.0.0-develop.1) (2025-11-15)
+
+
+### Code Refactoring
+
+* renamed the good sentence generator class ([686660d](https://github.com/doda2025-team4/lib-version/commit/686660d07e83df5c61f5462842c6e5c297e949b2))
+
+
+### BREAKING CHANGES
+
+* old names can no longer be used.
+
 # [1.1.0-develop.1](https://github.com/doda2025-team4/lib-version/compare/v1.0.0...v1.1.0-develop.1) (2025-11-15)
 
 
