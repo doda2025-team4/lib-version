@@ -24,10 +24,10 @@ I used the following docker command to enter a container where everything requir
 docker run --rm -it -v /path/to/lib-version/:/usr/src/lib-version:Z -w /usr/src/lib-version maven:3.9.11-eclipse-temurin-25-noble /bin/bash
 ```
 
-To compile the project and run the tests, run the following inside the interactively run container:
+To compile the project and run the tests, run the following inside the interactively run container **(Old! See [F2](#f2))**:
 
 ```bash
-mvn package
+mvn clean package
 ```
 
 I learned how to do this from: https://hub.docker.com/_/maven.
@@ -37,3 +37,30 @@ Built upon this project, I implemented what was discussed [here](https://stackov
 To access the properties, I followed the instructions found [here](https://mkyong.com/java/java-read-a-file-from-resources-folder/).
 
 Now, when running the tests, you should see the tests passing. The test verifies the string returned by getVersion() is equal to the version specified in `pom.xml`.
+
+## F2
+
+### Packaging Part
+
+To create the GitHub action that creates a package in the repo, I used the template provided at: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path. This is in `.github/workflows/maven-publish.yml`. It is a workflow that is used in two other workflows. One for the automatic versioning and releases and one for manual releases.
+
+I updated `pom.xml` to include a `distributionManagement` section as specified in https://docs.github.com/en/actions/tutorials/publish-packages/publish-java-packages-with-maven.
+
+### Versioning Part
+
+I replaced the hardcoded version in `pom.xml` by the CI-friendly `${revision}`, as specified in: https://maven.apache.org/guides/mini/guide-maven-ci-friendly.html.
+
+However, this means the unit test no longer works. So, I removed it. This also means, you need to provide a version in the packaging command:
+
+```bash
+mvn -Drevision=1.0.0-SNAPSHOT clean package
+```
+
+The `-Drevision` flag also needs to be used in the CI packaging workflow. In `.github/workflows/maven-publish-manual-release.yml`, its value is `${{ github.event.release.name }}`, because the workflow is triggered by the publishing of a release. In `.github/workflows/semantic-versioning.yml`, its value acquired by `codacy/git-version@2.8.6`. This is a workflow from the GitHub Actions Marketplace. More information about it is found [here](https://github.com/marketplace/actions/git-version). I have set it up to loosely follow the [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) structure.
+
+I also made it so a new release is made based on the new version using `softprops/action-gh-release@v2`, another workflow from the GitHub Actions Marketplace. More information about it is found [here](https://github.com/marketplace/actions/gh-release).
+
+Resources I used:
+- Workflow triggers: https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#about-events-that-trigger-workflows
+- Reusing workflows: https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows
+- 

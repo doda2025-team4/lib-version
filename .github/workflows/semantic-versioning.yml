@@ -1,0 +1,55 @@
+name: Semantic Versioning
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - 'main'
+      - 'develop'
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  release:
+    name: Versioned Release
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.merged == true
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}   # checkout the correct branch name
+          fetch-depth: 0                # fetch the whole repo history
+
+      - name: Git Version
+        id: version
+        uses: codacy/git-version@2.8.6
+        with:
+          release-branch: main
+          dev-branch: develop
+          minor-identifier: /^feat(ure)+:|^feat(ure)+\(.*\):/
+          major-identifier: /BREAKING CHANGE|^[^:]*!:/
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          token: ${{ secrets.RELEASE_TOKEN }}
+          name: ${{ steps.version.outputs.version }}
+          tag_name: v${{ steps.version.outputs.version }}
+          make_latest: false
+
+  package:
+    name: Package
+    needs: release
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/maven-publish.yml
+    with: 
+      version: ${{ needs.release.outputs.version }}
