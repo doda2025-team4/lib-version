@@ -4,10 +4,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-/**
- * Hello world!
- *
- */
+
 public class VersionUtil
 {
     public String getVersion() throws IOException {
