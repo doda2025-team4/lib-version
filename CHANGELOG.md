@@ -1,3 +1,10 @@
+## [2.1.1-develop.1](https://github.com/doda2025-team4/lib-version/compare/v2.1.0...v2.1.1-develop.1) (2025-11-15)
+
+
+### Bug Fixes
+
+* VersionUtil libProps property is made final ([e90b754](https://github.com/doda2025-team4/lib-version/commit/e90b7542db2ccd0a01bac8158164fc0526dee842))
+
 # [2.1.0](https://github.com/doda2025-team4/lib-version/compare/v2.0.0...v2.1.0) (2025-11-15)
 
 
