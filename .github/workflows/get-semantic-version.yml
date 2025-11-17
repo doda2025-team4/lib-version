@@ -58,8 +58,6 @@ jobs:
           LATEST_RELEASE=$(echo "$RELEASE_TAGS" | tail -1)
           LATEST_PRERELEASE=$(echo "$PRERELEASE_TAGS" | tail -1)
 
-
-
           echo "Latest release version is '$LATEST_RELEASE' and latest prerelease version on this branch is '$LATEST_PRERELEASE'"
 
           CLEAN_LATEST_RELEASE=${LATEST_RELEASE#v}
@@ -67,23 +65,30 @@ jobs:
           LATEST_RELEASE_MINOR=$(echo "$CLEAN_LATEST_RELEASE" | cut -d. -f2)
           LATEST_RELEASE_PATCH=$(echo "$CLEAN_LATEST_RELEASE" | cut -d. -f3)
 
-          CLEAN_LATEST_PRERELEASE=${LATEST_PRERELEASE#v}
-          CLEAN_LATEST_PRERELEASE=${CLEAN_LATEST_PRERELEASE%%-*}
-          LATEST_PRERELEASE_MAJOR=$(echo "$CLEAN_LATEST_PRERELEASE" | cut -d. -f1)
-          LATEST_PRERELEASE_MINOR=$(echo "$CLEAN_LATEST_PRERELEASE" | cut -d. -f2)
-          LATEST_PRERELEASE_PATCH=$(echo "$CLEAN_LATEST_PRERELEASE" | cut -d. -f3)
-          LATEST_PRERELEASE_NR=$([ -n "$PRERELEASE_BRANCH" ] && echo "$LATEST_PRERELEASE" | sed -E "s/^v[0-9]+\.[0-9]+\.[0-9]+${PRERELEASE_BRANCH}\.([0-9]+)/\1/")
+          if [ -n "$PRERELEASE_BRANCH" ]; then
+            CLEAN_LATEST_PRERELEASE=${LATEST_PRERELEASE#v}
+            CLEAN_LATEST_PRERELEASE=${CLEAN_LATEST_PRERELEASE%%-*}
+            LATEST_PRERELEASE_MAJOR=$(echo "$CLEAN_LATEST_PRERELEASE" | cut -d. -f1)
+            LATEST_PRERELEASE_MINOR=$(echo "$CLEAN_LATEST_PRERELEASE" | cut -d. -f2)
+            LATEST_PRERELEASE_PATCH=$(echo "$CLEAN_LATEST_PRERELEASE" | cut -d. -f3)
+            LATEST_PRERELEASE_NR=$([ -n "$PRERELEASE_BRANCH" ] && echo "$LATEST_PRERELEASE" | sed -E "s/^v[0-9]+\.[0-9]+\.[0-9]+${PRERELEASE_BRANCH}\.([0-9]+)/\1/")
+
+            ALREADY_GREATER_MAJOR=$([ "$LATEST_PRERELEASE_MAJOR" -gt "$LATEST_RELEASE_MAJOR" ] && echo "true" || true)
+            ALREADY_GREATER_MINOR=$([ "$LATEST_PRERELEASE_MINOR" -gt "$LATEST_RELEASE_MINOR" ] && echo "true" || true)
+            ALREADY_GREATER_PATCH=$([ "$LATEST_PRERELEASE_PATCH" -gt "$LATEST_RELEASE_PATCH" ] && echo "true" || true)
+          fi
 
           if [ -n "$PRERELEASE_BRANCH" ]; then
             COMMIT_OF_LATEST_RELEASE=$(git rev-parse "$LATEST_PRERELEASE")
           else
             COMMIT_OF_LATEST_RELEASE=$(git rev-parse "$LATEST_RELEASE")
           fi
+          
           COMMIT_MESSAGES_SINCE_LATEST_RELEASE=$(git log "$COMMIT_OF_LATEST_RELEASE..$INPUT_BRANCH" --pretty=format:"%B")
           BREAKING_CHANGE_INTRODUCED=$(echo "$COMMIT_MESSAGES_SINCE_LATEST_RELEASE" | grep -E 'BREAKING CHANGE|^[^:]*!:' || true)
           FEATURE_INTRODUCED=$(echo "$COMMIT_MESSAGES_SINCE_LATEST_RELEASE" | grep -E '^(feat(ure)?|perf(ormance)?)(\(.*\))?:' || true)
           PATCH_INTRODUCED=$(echo "$COMMIT_MESSAGES_SINCE_LATEST_RELEASE" | grep -E '^fix(\(.*\))?:' || true)
-          if [ -n "$BREAKING_CHANGE_INTRODUCED" ]; then
+          if [ -n "$BREAKING_CHANGE_INTRODUCED" ] && [ "${PRERELEASE_BRANCH:+set}" = "${ALREADY_GREATER_MAJOR:+set}" ]; then
             if [ -n "$PRERELEASE_BRANCH" ]; then
               NEW_PRERELEASE_MAJOR=$(($LATEST_RELEASE_MAJOR + 1))
               NEW_PRERELEASE_MINOR=0
@@ -94,17 +99,19 @@ jobs:
               else
                 NEW_PRERELEASE_NR=1
               fi
-              echo "version=v$NEW_PRERELEASE_MAJOR.$NEW_PRERELEASE_MINOR.$NEW_PRERELEASE_PATCH$PRERELEASE_BRANCH.$NEW_PRERELEASE_NR" >> $GITHUB_OUTPUT
+              FINAL_VERSION="v$NEW_PRERELEASE_MAJOR.$NEW_PRERELEASE_MINOR.$NEW_PRERELEASE_PATCH$PRERELEASE_BRANCH.$NEW_PRERELEASE_NR"
             else
               NEW_RELEASE_MAJOR=$(($LATEST_RELEASE_MAJOR + 1))
               NEW_RELEASE_MINOR=0
               NEW_RELEASE_PATCH=0
-
-              echo "version=v$NEW_RELEASE_MAJOR.$NEW_RELEASE_MINOR.$NEW_RELEASE_PATCH" >> $GITHUB_OUTPUT
+              FINAL_VERSION="v$NEW_RELEASE_MAJOR.$NEW_RELEASE_MINOR.$NEW_RELEASE_PATCH"
             fi
+            echo "version=$FINAL_VERSION" >> $GITHUB_OUTPUT
             echo "is-new=true" >> $GITHUB_OUTPUT
-            echo "A breaking change has been introduced: $BREAKING_CHANGE_INTRODUCED"
-          elif [ -n "$FEATURE_INTRODUCED" ]; then
+            echo "A breaking change has been introduced: $BREAKING_CHANGE_INTRODUCED\nSo, the new version is: $FINAL_VERSION"
+            exit
+          fi
+          if [ -n "$FEATURE_INTRODUCED" ] && [ "${PRERELEASE_BRANCH:+set}" = "${ALREADY_GREATER_MINOR:+set}" ]; then
             if [ -n "$PRERELEASE_BRANCH" ]; then
               NEW_PRERELEASE_MAJOR=$LATEST_RELEASE_MAJOR
               NEW_PRERELEASE_MINOR=$(($LATEST_RELEASE_MINOR + 1))
@@ -115,17 +122,20 @@ jobs:
               else
                 NEW_PRERELEASE_NR=1
               fi
-              echo "version=v$NEW_PRERELEASE_MAJOR.$NEW_PRERELEASE_MINOR.$NEW_PRERELEASE_PATCH$PRERELEASE_BRANCH.$NEW_PRERELEASE_NR" >> $GITHUB_OUTPUT
+              FINAL_VERSION="v$NEW_PRERELEASE_MAJOR.$NEW_PRERELEASE_MINOR.$NEW_PRERELEASE_PATCH$PRERELEASE_BRANCH.$NEW_PRERELEASE_NR"
             else
               NEW_RELEASE_MAJOR=$LATEST_RELEASE_MAJOR
               NEW_RELEASE_MINOR=$(($LATEST_RELEASE_MINOR + 1))
               NEW_RELEASE_PATCH=0
 
-              echo "version=v$NEW_RELEASE_MAJOR.$NEW_RELEASE_MINOR.$NEW_RELEASE_PATCH" >> $GITHUB_OUTPUT
+              FINAL_VERSION="v$NEW_RELEASE_MAJOR.$NEW_RELEASE_MINOR.$NEW_RELEASE_PATCH"
             fi
+            echo "version=$FINAL_VERSION" >> $GITHUB_OUTPUT
             echo "is-new=true" >> $GITHUB_OUTPUT
-            echo "A feature has been introduced: $FEATURE_INTRODUCED"
-          elif [ -n "$PATCH_INTRODUCED" ]; then
+            echo "A feature has been introduced: $FEATURE_INTRODUCED\nSo, the new version is: $FINAL_VERSION"
+            exit
+          fi
+          if [ -n "$PATCH_INTRODUCED" ] && [ "${PRERELEASE_BRANCH:+set}" = "${ALREADY_GREATER_PATCH:+set}" ]; then
             if [ -n "$PRERELEASE_BRANCH" ]; then
               NEW_PRERELEASE_MAJOR=$LATEST_RELEASE_MAJOR
               NEW_PRERELEASE_MINOR=$LATEST_RELEASE_MINOR
@@ -136,24 +146,24 @@ jobs:
               else
                 NEW_PRERELEASE_NR=1
               fi
-              echo "version=v$NEW_PRERELEASE_MAJOR.$NEW_PRERELEASE_MINOR.$NEW_PRERELEASE_PATCH$PRERELEASE_BRANCH.$NEW_PRERELEASE_NR" >> $GITHUB_OUTPUT
+              FINAL_VERSION="v$NEW_PRERELEASE_MAJOR.$NEW_PRERELEASE_MINOR.$NEW_PRERELEASE_PATCH$PRERELEASE_BRANCH.$NEW_PRERELEASE_NR"
             else
               NEW_RELEASE_MAJOR=$LATEST_RELEASE_MAJOR
               NEW_RELEASE_MINOR=$LATEST_RELEASE_MINOR
               NEW_RELEASE_PATCH=$(($LATEST_RELEASE_PATCH + 1))
 
-              echo "version=v$NEW_RELEASE_MAJOR.$NEW_RELEASE_MINOR.$NEW_RELEASE_PATCH" >> $GITHUB_OUTPUT
+              FINAL_VERSION="v$NEW_RELEASE_MAJOR.$NEW_RELEASE_MINOR.$NEW_RELEASE_PATCH"
             fi
+            echo "version=$FINAL_VERSION" >> $GITHUB_OUTPUT
             echo "is-new=true" >> $GITHUB_OUTPUT
-            echo "A patch has been introduced: $PATCH_INTRODUCED"
-          else
-            echo "11 -- $PRERELEASE_BRANCH"
-            if [ -n "$PRERELEASE_BRANCH" ]; then
-              echo "version=$LATEST_PRERELEASE" >> $GITHUB_OUTPUT
-            else
-              echo "version=$LATEST_RELEASE" >> $GITHUB_OUTPUT
-            fi
-            echo "is-new=false" >> $GITHUB_OUTPUT
-            echo "No version-worthy changes occured since previous version."
+            echo "A patch has been introduced: $PATCH_INTRODUCED\nSo, the new version is: $FINAL_VERSION"
+            exit
           fi
-          
+
+          if [ -n "$PRERELEASE_BRANCH" ]; then
+            echo "version=$LATEST_PRERELEASE" >> $GITHUB_OUTPUT
+          else
+            echo "version=$LATEST_RELEASE" >> $GITHUB_OUTPUT
+          fi
+          echo "is-new=false" >> $GITHUB_OUTPUT
+          echo "No version-worthy changes occured since previous version."
