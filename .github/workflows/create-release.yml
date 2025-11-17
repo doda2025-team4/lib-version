@@ -28,6 +28,6 @@ jobs:
           ref: ${{ inputs.branch }}
           fetch-depth: 0
       - run: |
-          gh release create ${{ inputs.version }} --target ${{ inputs.branch }} --generate-notes --fail-on-no-commits
+          gh release create ${{ inputs.version }} --target ${{ inputs.branch }} --generate-notes
         env:
           GITHUB_TOKEN: ${{ secrets.token }}
