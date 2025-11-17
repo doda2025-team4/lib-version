@@ -80,7 +80,6 @@ jobs:
             COMMIT_OF_LATEST_RELEASE=$(git rev-parse "$LATEST_RELEASE")
           fi
           COMMIT_MESSAGES_SINCE_LATEST_RELEASE=$(git log "$COMMIT_OF_LATEST_RELEASE..$INPUT_BRANCH" --pretty=format:"%B")
-          echo "$COMMIT_MESSAGES_SINCE_LATEST_RELEASE"
           BREAKING_CHANGE_INTRODUCED=$(echo "$COMMIT_MESSAGES_SINCE_LATEST_RELEASE" | grep -E 'BREAKING CHANGE|^[^:]*!:' || true)
           FEATURE_INTRODUCED=$(echo "$COMMIT_MESSAGES_SINCE_LATEST_RELEASE" | grep -E '^(feat(ure)?|perf(ormance)?)(\(.*\))?:' || true)
           PATCH_INTRODUCED=$(echo "$COMMIT_MESSAGES_SINCE_LATEST_RELEASE" | grep -E '^fix(\(.*\))?:' || true)
