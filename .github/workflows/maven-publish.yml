@@ -16,7 +16,9 @@ jobs:
       packages: write
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
+      with:
+        ref: ${{ github.event.release.tag_name }}
     - name: Set up JDK 25
       uses: actions/setup-java@v4
       with:
@@ -27,9 +29,9 @@ jobs:
     
     - name: Clean Version
       id: semver_info
-      uses: YunaBraska/semver-info-action@main
+      uses: YunaBraska/semver-info-action@main # Just to clean the version string (remove the 'v' prefix)
       with:
-        semver-a: ${{ github.event.release.name }}
+        semver-a: ${{ github.event.release.tag_name }}
       
 
     - name: Build with Maven
