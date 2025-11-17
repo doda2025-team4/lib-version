@@ -35,7 +35,7 @@ jobs:
         id: get-version
         run: |
           INPUT_BRANCH="${{ inputs.branch }}"
-          PRERELEASE_BRANCH=$([ "$INPUT_BRANCH" != "main" ] && echo "-$INPUT_BRANCH")
+          PRERELEASE_BRANCH=$([ "$INPUT_BRANCH" != "main" ] && echo "-$INPUT_BRANCH" || true)
           RELEASE_TAGS=$(git tag --merged "$INPUT_BRANCH" | grep -E "^v[0-9]+\.[0-9]+\.[0-9]$")
           PRERELEASE_TAGS=$(git tag --merged "$INPUT_BRANCH" | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+($PRERELEASE_BRANCH\.[0-9]+)?$")
 
@@ -71,7 +71,7 @@ jobs:
             LATEST_PRERELEASE_MAJOR=$(echo "$CLEAN_LATEST_PRERELEASE" | cut -d. -f1)
             LATEST_PRERELEASE_MINOR=$(echo "$CLEAN_LATEST_PRERELEASE" | cut -d. -f2)
             LATEST_PRERELEASE_PATCH=$(echo "$CLEAN_LATEST_PRERELEASE" | cut -d. -f3)
-            LATEST_PRERELEASE_NR=$([ -n "$PRERELEASE_BRANCH" ] && echo "$LATEST_PRERELEASE" | sed -E "s/^v[0-9]+\.[0-9]+\.[0-9]+${PRERELEASE_BRANCH}\.([0-9]+)/\1/")
+            LATEST_PRERELEASE_NR=$([ -n "$PRERELEASE_BRANCH" ] && echo "$LATEST_PRERELEASE" | sed -E "s/^v[0-9]+\.[0-9]+\.[0-9]+${PRERELEASE_BRANCH}\.([0-9]+)/\1/" || true)
 
             ALREADY_GREATER_MAJOR=$([ "$LATEST_PRERELEASE_MAJOR" -gt "$LATEST_RELEASE_MAJOR" ] && echo "true" || true)
             ALREADY_GREATER_MINOR=$([ "$LATEST_PRERELEASE_MINOR" -gt "$LATEST_RELEASE_MINOR" ] && echo "true" || true)
