@@ -29,5 +29,10 @@ jobs:
           fetch-depth: 0
       - run: |
           gh release create ${{ inputs.version }} --target ${{ inputs.branch }} --generate-notes
+          if [ "${{ inputs.branch }}" = "main" ]; then
+            gh release edit ${{ inputs.version }} --latest
+          else
+            gh release edit ${{ inputs.version }} --prerelease
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.token }}
