@@ -36,8 +36,8 @@ jobs:
         run: |
           INPUT_BRANCH="${{ inputs.branch }}"
           PRERELEASE_BRANCH=$([ "$INPUT_BRANCH" != "main" ] && echo "-$INPUT_BRANCH" || true)
-          RELEASE_TAGS=$(git tag --merged "$INPUT_BRANCH" | grep -E "^v[0-9]+\.[0-9]+\.[0-9]$")
-          PRERELEASE_TAGS=$(git tag --merged "$INPUT_BRANCH" | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+$PRERELEASE_BRANCH\.[0-9]+$")
+          RELEASE_TAGS=$(git tag --merged "$INPUT_BRANCH" | grep -E "^v[0-9]+\.[0-9]+\.[0-9]$" || true)
+          PRERELEASE_TAGS=$(git tag --merged "$INPUT_BRANCH" | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+$PRERELEASE_BRANCH\.[0-9]+$" || true)
 
           # If no release version tags exist yet, create a v1.0.0 if on release branch. If on pre-release branch,
           # create only a new pre-release tag if no pre-release tags exist yet
