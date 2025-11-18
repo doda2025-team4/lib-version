@@ -37,7 +37,7 @@ jobs:
           INPUT_BRANCH="${{ inputs.branch }}"
           PRERELEASE_BRANCH=$([ "$INPUT_BRANCH" != "main" ] && echo "-$INPUT_BRANCH" || true)
           RELEASE_TAGS=$(git tag --merged "$INPUT_BRANCH" | grep -E "^v[0-9]+\.[0-9]+\.[0-9]$")
-          PRERELEASE_TAGS=$(git tag --merged "$INPUT_BRANCH" | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+($PRERELEASE_BRANCH\.[0-9]+)?$")
+          PRERELEASE_TAGS=$(git tag --merged "$INPUT_BRANCH" | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+$PRERELEASE_BRANCH\.[0-9]+$")
 
           # If no release version tags exist yet, create a v1.0.0 if on release branch. If on pre-release branch,
           # create only a new pre-release tag if no pre-release tags exist yet
@@ -76,9 +76,18 @@ jobs:
             ALREADY_GREATER_MAJOR=$([ "$LATEST_PRERELEASE_MAJOR" -gt "$LATEST_RELEASE_MAJOR" ] && echo "true" || true)
             ALREADY_GREATER_MINOR=$([ "$LATEST_PRERELEASE_MINOR" -gt "$LATEST_RELEASE_MINOR" ] && echo "true" || true)
             ALREADY_GREATER_PATCH=$([ "$LATEST_PRERELEASE_PATCH" -gt "$LATEST_RELEASE_PATCH" ] && echo "true" || true)
+
+            PRERELEASE_SMALLER_MAJOR=$([ "$LATEST_PRERELEASE_MAJOR" -lt "$LATEST_RELEASE_MAJOR" ] && echo "true" || true)
+            PRERELEASE_SMALLER_MINOR=$([ "$LATEST_PRERELEASE_MINOR" -lt "$LATEST_RELEASE_MINOR" ] && echo "true" || true)
+            PRERELEASE_SMALLER_PATCH=$([ "$LATEST_PRERELEASE_PATCH" -lt "$LATEST_RELEASE_PATCH" ] && echo "true" || true)
+
+            PRERELEASE_OUTDATED=$([ -n "$PRERELEASE_SMALLER_MAJOR" ] || [ -n "$PRERELEASE_SMALLER_MINOR" ] || [ -n "$PRERELEASE_SMALLER_PATCH" ] && echo "true" || true)
+            if [ -n "$PRERELEASE_OUTDATED" ]; then
+              echo "The latest pre-release branch is older than the latest release branch. Commits from latest release version will be considered instead of latest pre-release version."
+            fi
           fi
 
-          if [ -n "$PRERELEASE_BRANCH" ]; then
+          if [ -n "$PRERELEASE_BRANCH" ] && [ -z "$PRERELEASE_OUTDATED" ]; then
             COMMIT_OF_LATEST_RELEASE=$(git rev-parse "$LATEST_PRERELEASE")
           else
             COMMIT_OF_LATEST_RELEASE=$(git rev-parse "$LATEST_RELEASE")
