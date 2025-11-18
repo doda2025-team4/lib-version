@@ -1,6 +1,6 @@
 # Lib Version
 
-This repository will contain the solutions to the following functionalities:
+This repository contains the solutions to the following functionalities:
 
 - *F1: Create a Version-aware Library*: Add a version-aware Maven library `lib-version` to your organization. The library should contain a class `VersionUtil` that can be asked for its version. The implementation should parse meta-data that is included in the package or explicitly store the version in a separate resource ﬁle. The `app` should depend on the library and use the `VersionUtil` somewhere. This feature request has two purposes: a) it allows you to illustrate that you understand how to release and reuse a library and b) the awareness about the version can prove useful later, for example, to add meaningful system information during the monitoring.
 	- **Info:** Do not rely on parsing data from the version-control system, like tags, when determining the version during runtime, as it might not always be available when the library is reused.
@@ -8,68 +8,30 @@ This repository will contain the solutions to the following functionalities:
 	- **Caution:** Do *NOT* release your projects to *Maven Central*! Do not pollute release repositories with test releases!
 - *F11: `lib-version` pre-releases:* All stable releases of all your artifacts must be properly and automatically versioned. However, we want to further advance the versioning concept for the `lib-version` repository. The goal is to automate both the creation of stable releases, while also automating the release of pre-release versions from branches.
 
-## F1
+Look at the release tab on the right on the GitHub repository to see the releases. They are all automatically generated. The packages are automatically generated as well.
 
-A boilerplate maven project has been created with the following command:
+Look at the workflows in `.github/workflows/` to see how the workflows are designed. An explanation is found below.
 
-```bash
-$ mvn archetype:generate -DgroupId=com.github.doda2025-team4.lib -DartifactId=lib-version -DarchetypeArtifactId=maven-archetype-quickstart
-```
+Look at the `app` repository to see the library in action.
 
-I learned how to do this from: https://maven.apache.org/guides/getting-started/maven-in-five-minutes.html.
+## Functionality
 
-I used the following docker command to enter a container where everything required is installed:
+This library contains two classes: `VersionUtil`, as requested, and `GoodSentenceGenerator`. The `VersionUtil` class has two methods: `getVersion()` and `getName()`. These return the library version and name as a `String` respectively. These are read from a properties file in a filtered resource directory. This approach to getting the library version and name are based on [this StackOverflow thread](https://stackoverflow.com/questions/3697449/retrieve-version-from-maven-pom-xml-in-code). The properties file is loaded in the constructor of `VersionUtil`.
 
-```bash
-docker run --rm -it -v /path/to/lib-version/:/usr/src/lib-version:Z -w /usr/src/lib-version maven:3.9.11-eclipse-temurin-25-noble /bin/bash
-```
+The `GoodSentenceGenerator` class contains the logic that the `app` repository uses the `lib-version` library for. It is a class with one method: `generateSentence()`. This method returns a random string from a predetermined list of strings. This class is also unit tested.
 
-To compile the project and run the tests, run the following inside the interactively run container **(Old! See [F2](#f2))**:
+## Workflows
 
-```bash
-mvn clean package
-```
+There are four workflow files in this repository: `semantic-versioning.yml`, `get-semantic-version.yml`, `create-release.yml` and `maven-publish.yml`. `semantic-versioning.yml` is triggerd on pushes to the `main` and `develop` branches. This workflow uses `get-semantic-version.yml` to get the newest semantic version of the branch that is pushed to. If this is a newer version than the latest, it will use `create-release.yml` to create a release of that version. `maven-publish.yml` is triggered when a new release is made. It packages and deploys the package, giving it the version that is the tag of the release. Because it has a separate trigger, it is also triggered when releases are manualy published. This is a conscious decision.
 
-I learned how to do this from: https://hub.docker.com/_/maven.
+Now follows a more detailed explanantion of `get-semantic-version.yml`, because that workflow is most complex.
 
-Built upon this project, I implemented what was discussed [here](https://stackoverflow.com/questions/3697449/retrieve-version-from-maven-pom-xml-in-code) to statically place the version specified in the pom.xml in a property.
+### `get-semantic-version.yml`
 
-To access the properties, I followed the instructions found [here](https://mkyong.com/java/java-read-a-file-from-resources-folder/).
+This workflow parses the commits and tags of the provided branch to determine the new version of the latest commit of that branch and whether that version is new compared to the previous version. It assumes that the release branch is `main` and that any other branch is a `pre-release` branch. For the release branch, the version is in the format `vX.Y.Z` and for a pre-release branch `branch`, the version is in the format `vX.Y.Z-branch.N`.
 
-Now, when running the tests, you should see the tests passing. The test verifies the string returned by getVersion() is equal to the version specified in `pom.xml`.
+The versions are determined based on the commit messages of the commits since the latest release or pre-release tag and those tags themselves. A version is bumped according to the semantic versioning with (major, minor and patch). The commit messages are assumed to be in the form of [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/). If there is a commit message since the last corresponding version tag that contains either the string `BREAKING CHANGE` or is marked with an exclamation mark (`!`), then a breaking change is assumed to have been made, so the major version is bumped. If this is not the case, but there is a commit message that describes either a feature or a change in performance, then the minor version is bumped. If this is also not the case, but a commit message that indicates a fix is found, then the patch version is bumped. If none of these cases were found, then the version is not bumped.
 
-## F2
+The pre-release branch has a special case. There, it may happen that new breaking changes, features or patches are introduced while it already has a pre-release version that reflects that. In this case, no version should be bumped, because relative to the release branch, nothing extra new happened (only relative to the pre-release branch). So, the pre-release number is increased. That is the `N` in the example `vX.Y.Z-branch.N` for some pre-release branch `branch`.
 
-### Packaging
-
-To create the GitHub action that creates a package in the repo, I used the template provided at: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#apache-maven-with-a-settings-path. The only thing I changed is to have it trigger when a version is released.
-
-I updated `pom.xml` to include a `distributionManagement` section as specified in https://docs.github.com/en/actions/tutorials/publish-packages/publish-java-packages-with-maven.
-
-I replaced the hardcoded version in `pom.xml` by the CI-friendly `${revision}`, as specified in: https://maven.apache.org/guides/mini/guide-maven-ci-friendly.html.
-
-However, this means the unit test no longer works. So, I removed it. This also means, you need to provide a version in the packaging command:
-
-```bash
-mvn -Drevision=1.0.0-SNAPSHOT clean package
-```
-
-The `-Drevision` flag also needs to be used in the CI packaging workflow. Its value is `${{ github.event.release.name }}`, because the packaging workflow is run every time a release is published.
-
-### Releasing and Versioning
-
-To automatically have a new releases be created with correct and automatically generated versions, I have used `cycjimmy/semantic-release-action@v5`. This is an GitHub Action from the GitHub Marketplace. For more information, visit: https://github.com/marketplace/actions/action-for-semantic-release#semantic_version.
-
-This ensures a new release is published with correct versions according to [Semantic Release](https://github.com/semantic-release/semantic-release) when a commit is pushed to the main branch. This relies on the use of [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/). It should work for merge request to main. However, fast forward merges will likely not work because it doesn't explicitly push to the branch.
-
-This also required, the use of a release configuration. I followed the guideline [here](https://github.com/semantic-release/semantic-release/blob/master/docs/usage/configuration.md#configuration) to create `.releaerc.json`. 
-
-## F11
-
-I added the develop branch as another branch where releases will be generated. For this one, I set the pre-release flag to be true. This was done both in the `.releaserc.json` and in the `semantic-versioning.yml`. In the future, more branches could be added like this, for example: rc, alpha, beta, etc.
-
-Additionally, I added a feature to the library. It now generates some sentences. This is used to test to see if the minor version increases as expected.
-
-Furthermore, the version of the Maven package has been cleaned. It no longer has a prefix.
-
-To test a major version change, I implemented some breaking changes. Renaming a class. I also added features to test minor verion changes and a fix to test patches. Finally, I did some work on this documentation to see if indeed no new release would be made.
+The way this workflow is used in `semantic-versioning.yml` makes it so versions of only the branches `main` and `develop` are tracked.
