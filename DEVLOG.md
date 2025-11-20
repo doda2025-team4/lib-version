@@ -9,7 +9,7 @@ The solution to these assignments, the `README.md` and this devlog have all been
 To be able to run maven commands and work with Java, I used a Docker container. I used the following command:
 
 ```bash
-docker run --rm -it -v /path/to/lib-version/:/usr/src/lib-version:Z -w /usr/src/lib-version maven:3.9.11-eclipse-temurin-25-noble /bin/bash
+docker run --rm -it -v ./lib-version/:/usr/src/lib-version:Z -w /usr/src/lib-version maven:3.9.11-eclipse-temurin-25-noble /bin/bash
 ```
 
 A boilerplate maven project has been created with the following command:

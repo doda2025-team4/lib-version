@@ -8,11 +8,15 @@ This repository contains the solutions to the following functionalities:
 	- **Caution:** Do *NOT* release your projects to *Maven Central*! Do not pollute release repositories with test releases!
 - *F11: `lib-version` pre-releases:* All stable releases of all your artifacts must be properly and automatically versioned. However, we want to further advance the versioning concept for the `lib-version` repository. The goal is to automate both the creation of stable releases, while also automating the release of pre-release versions from branches.
 
-Look at the release tab on the right on the GitHub repository to see the releases. They are all automatically generated. The packages are automatically generated as well.
+## For the Reviewer
 
-Look at the workflows in `.github/workflows/` to see how the workflows are designed. An explanation is found below.
+Consider the following:
 
-Look at the `app` repository to see the library in action.
+- Look at the release tab on the right on the GitHub repository to see the releases. They are all automatically generated. The packages are automatically generated as well.
+
+- Look at the workflows in `.github/workflows/` to see how the workflows are designed. An explanation is found below.
+
+- Look at the `app` repository to see the library in action.
 
 ## Functionality
 
@@ -23,6 +27,8 @@ The `GoodSentenceGenerator` class contains the logic that the `app` repository u
 ## Workflows
 
 There are four workflow files in this repository: `semantic-versioning.yml`, `get-semantic-version.yml`, `create-release.yml` and `maven-publish.yml`. `semantic-versioning.yml` is triggerd on pushes to the `main` and `develop` branches. This workflow uses `get-semantic-version.yml` to get the newest semantic version of the branch that is pushed to. If this is a newer version than the latest, it will use `create-release.yml` to create a release of that version. `maven-publish.yml` is triggered when a new release is made. It packages and deploys the package, giving it the version that is the tag of the release. Because it has a separate trigger, it is also triggered when releases are manualy published. This is a conscious decision.
+
+Note that now, the branch called `develop` is the only pre-release branch defined. However, any branch could easily be made a pre-release branch. Think of `alpha`, `beta`, `rc` (release candidate), branches for A/B-testing, etc.
 
 Now follows a more detailed explanantion of `get-semantic-version.yml`, because that workflow is most complex.
 
