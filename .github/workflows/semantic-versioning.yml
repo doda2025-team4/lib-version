@@ -23,4 +23,4 @@ jobs:
       version: ${{ needs.get-version.outputs.version }}
       branch: ${{ github.ref_name }}
     secrets:
-      token: ${{ secrets.RELEASE_TOKEN }}
+      token: ${{ secrets.GITHUB_TOKEN }}
