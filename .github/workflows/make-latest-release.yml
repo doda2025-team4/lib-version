@@ -9,8 +9,10 @@ permissions:
 jobs:
   get-version:
     runs-on: ubuntu-latest
+    if: ${{ github.ref_name == 'main' }}
     outputs:
       version: ${{ steps.get-new-release-version.outputs.version }}
+      pre-release: ${{ steps.get-new-release-version.outputs.pre-release }}
     
     steps:
       - name: Checkout
@@ -20,22 +22,19 @@ jobs:
           fetch-depth: 0
       - name: Get New Release Version
         id: get-new-release-version
-        if: ${{ github.ref_name == 'main' }}
         run: |
-          CURRENT_PRERELEASE_TAGS=$(git tag --points-at HEAD | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+-pre-release\.[0-9]+$" || true)
+          MAIN_PRERELEASE_TAGS=$(git tag --merged "main" | grep -E "^v[0-9]+\.[0-9]+\.[0-9]+-pre-release\.[0-9]+$" || true)
 
-          if [ -z "$CURRENT_PRERELEASE_TAGS" ]; then
-            echo "No pre-release version tags on the latest commit on main exist."
+          if [ -z "$MAIN_PRERELEASE_TAGS" ]; then
+            echo "No pre-release version tags on main exist."
             exit
           fi
 
-          if [ "$(echo "$CURRENT_PRERELEASE_TAGS" | wc -l)" -gt 1 ]; then
-            echo "More than one pre-release version tag on the latest commit on main exists."
-            exit
-          fi
+          LATEST_MAIN_PRERELEASE=$(echo "$MAIN_PRERELEASE_TAGS" | tail -1)
 
-          echo "Latest main pre-release version is '$CURRENT_PRERELEASE_TAGS'."
-          CLEAN=${CURRENT_PRERELEASE_TAGS#v}
+          echo "Latest main pre-release version is '$LATEST_MAIN_PRERELEASE'."
+          echo "pre-release=$LATEST_MAIN_PRERELEASE" >> $GITHUB_OUTPUT
+          CLEAN=${LATEST_MAIN_PRERELEASE#v}
           CLEAN=${CLEAN%%-*}
           IFS='.' read -r MAJOR MINOR PATCH <<< "$CLEAN"
           NEW_VERSION=v$MAJOR.$MINOR.$PATCH
@@ -44,11 +43,12 @@ jobs:
 
   release-version:
     needs: get-version
-    if: ${{ needs.get-version.outputs.is-new == 'true' }}
+    if: ${{ needs.get-version.outputs.version }}
     uses: ./.github/workflows/create-release.yml
     with:
       version: ${{ needs.get-version.outputs.version }}
-      branch: ${{ github.ref_name }}
+      branch: "main"
+      tag: ${{ needs.get-version.outputs.pre-release }}
       latest: true
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
