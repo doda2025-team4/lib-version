@@ -27,7 +27,9 @@ jobs:
       token: ${{ secrets.GITHUB_TOKEN }}
   
   publish-library:
-    needs: get-version
+    needs: 
+      - get-version
+      - release-version
     if: needs.get-version.outputs.is-new == 'true'
     uses: ./.github/workflows/maven-publish.yml
     with:
