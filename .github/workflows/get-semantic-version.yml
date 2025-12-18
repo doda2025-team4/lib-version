@@ -170,7 +170,7 @@ jobs:
             local is_already_greater=""
             case $change_type in
               patch)
-                [ -n "${!already_greater_flag}" ] || [ -n "${already_greater_flag/PATCH/MINOR}" ] || [ -n "${already_greater_flag/PATCH/MAJOR}" ] && is_already_greater="true"
+                [ -n "${!already_greater_flag}" ] || [ -n "${!already_greater_flag/PATCH/MINOR}" ] || [ -n "${!already_greater_flag/PATCH/MAJOR}" ] && is_already_greater="true"
                 ;;
               minor)
                 [ -n "${!already_greater_flag}" ] || [ -n "${already_greater_flag/MINOR/MAJOR}" ] && is_already_greater="true"

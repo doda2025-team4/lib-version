@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
   get-version:
@@ -22,5 +23,14 @@ jobs:
     with:
       version: ${{ needs.get-version.outputs.version }}
       branch: ${{ github.ref_name }}
+    secrets:
+      token: ${{ secrets.GITHUB_TOKEN }}
+  
+  publish-library:
+    needs: get-version
+    if: needs.get-version.outputs.is-new == 'true'
+    uses: ./.github/workflows/maven-publish.yml
+    with:
+      version: ${{ needs.get-version.outputs.version }}
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
