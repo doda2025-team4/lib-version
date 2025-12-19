@@ -40,7 +40,7 @@ jobs:
             TARGET=${COMMIT_OF_TAG:+$TARGET}
           fi
 
-          gh release create ${{ inputs.version }} --target $TARGET --generate-notes
+          gh release create ${{ inputs.version }} --target $TARGET --generate-notes --latest=false
           if [ -n "${{ inputs.latest }}" ]; then
             gh release edit ${{ inputs.version }} --latest
           else
